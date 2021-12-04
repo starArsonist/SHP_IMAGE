@@ -7,6 +7,7 @@ private:
 public:
 	Pixel():c(),p(){}
 	Pixel(Color c, Point p):c(c),p(p){}
+	Pixel(Point p):c(),p(p){}
 	Pixel(const Pixel& pix):c(pix.c),p(pix.p){}
 	Color getColor(){return c;}
 	int getX(){return p.x;}
