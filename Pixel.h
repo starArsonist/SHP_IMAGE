@@ -1,3 +1,6 @@
+#ifndef PIXEL_H
+#define PIXEL_H
+
 #include"Point.h"
 #include"Color.h"
 class Pixel{
@@ -15,3 +18,5 @@ public:
 	void setColor(Color c){this->c=c;}
 	void setPos(int x,int y){p.x=x; p.y=y;}
 };
+
+#endif // PIXEL_H
