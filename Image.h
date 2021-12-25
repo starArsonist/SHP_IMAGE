@@ -1,94 +1,102 @@
+#ifndef IMAGE_H
+#define IMAGE_H
 #include "Pixel.h"
 #include "lodepng.h"
 #include <iostream>
 #include <vector>
 #include <string>
+#include <exception>
 #include <algorithm>
+
 using namespace std;
 class Image{
 public:
 	unsigned int width, height;
 	vector <Pixel> pixels;
 
-	Image(): width(0), height(0){}
-	Image(int width, int height, vector <Pixel> pixels): width(width), height(height), pixels(pixels){}
-	Image(const Image& img): width(img.width), height(img.height), pixels(img.pixels){}
+    /* Default constructor */
+	Image();
 
-	Image(string filename)
-	{
-		const char* filein = filename.c_str();
-		vector <uchar> image;
-		unsigned width, height, w=0, h=0;
-		lodepng::decode(image, width, height, filein);
-		for(unsigned long long i=0; i<width*height*4; i+=4, w++)
-		{
-			Color color(image[i], image[i+1], image[i+2], image[i+3]);
-			Point point(w/width, w%width+1);
-			Pixel pixel(color, point);
-			pixels.push_back(pixel);
-		}
-	}
+    /* Constructor
+        width - width of image
+        height - height of image
+        pixels - vector of pixels for image. Must contains width*height pixels
 
-	void setPixel(Pixel pixel, unsigned x)
-	{
-		pixels[x]=pixel;
-	}
-	void setPixel(Color color, unsigned x, unsigned y)
-	{
-		Point point(x, y);
-		Pixel pixel(color, point);
-		pixels[y*width+x]=pixel;
-	}
-	void setPixel(Color color, Point point)
-	{
-		Pixel pixel(color, point);
-		pixels[pixel.getY()*width+pixel.getY()]=pixel;
-	}
-	void setPixel(Pixel pixel)
-	{
-		pixels[pixel.getY()*width+pixel.getX()]=pixel;
-	}
+        Construct Image instance from pixels
+    */
+	Image(int width, int height, vector <Pixel> pixels);
 
-	Pixel getPixel(unsigned x)
-	{
-		return pixels[x];
-	}
+    /* Constructor
+        img - Image instance
 
-	Pixel getPixel(unsigned x, unsigned y)
-	{
-		return pixels[y*width+x];
-	}
+        Construct Image instance from another
+    */
+	Image(const Image& img);
 
-	vector <Pixel> getPixels()
-	{
-		return pixels;
-	}
+    /* Constructor
+        filename - path to image
 
-	void setColor(string color)
-	{
-		for(int i=0; i<pixels.size(); i++)
-		{
-            if(pixels[i].getColor().A > 0)
-            {
-                uchar medium_color = (pixels[i].getColor().R + pixels[i].getColor().G + pixels[i].getColor().B)/3;
-                Color col(medium_color);
+        Construct Image instance from .png image file
+    */
+	Image(string filename);
 
-            }
-            pixels[i].setColor(col);
-        }
-    }
+    /* setPixel(Pixel pixel, unsigned x);
+        pixel - pixel for set
+        x - pos of pixel in flat array of pixels
 
-	void outImage(string filename)
-	{
-		vector <uchar> image;
-		unsigned width = pixels[pixels.size()-1].getY(), height=pixels[pixels.size()-1].getX();
-		for(unsigned long long i=0; i<pixels.size(); i++)
-		{
-			image.push_back(pixels[i].getColor().R);
-			image.push_back(pixels[i].getColor().G);
-			image.push_back(pixels[i].getColor().B);
-			image.push_back(pixels[i].getColor().A);
-		}
-		lodepng::encode(filename.c_str(), image, width, height);
-	}
+        Set pixel in pos x to pixel value
+    */
+	void setPixel(Pixel pixel, unsigned x);
+
+    /* setPixel(Color c, unsigned x, unsigned y);
+        c - color
+        x - X pos of pixel in image
+        y - Y pos of pixel in image
+
+        Set color of pixel in pos (x,y) to c
+    */
+	void setPixel(Color c, unsigned x, unsigned y);
+
+    /* setPixel(Pixel pixel);
+        pixel - new val for pixel
+
+        Set new val of pixel to pos of pixel
+    */
+	void setPixel(Pixel pixel);
+
+    /* Pixel getPixel(unsigned x);
+        x - pos of pixel in flat array of pixels
+
+        return copy of pixel from image in pos x
+
+        Returned value: pixel from pos x
+    */
+	Pixel getPixel(unsigned x);
+
+    /* Pixel getPixel(unsigned x, unsigned y);
+        x - X pos of pixel in image
+        y - Y pos of pixel in image
+
+        return copy of pixel from image point (x,y)
+
+        Returned value: pixel from point (x,y)
+    */
+	Pixel getPixel(unsigned x, unsigned y);
+
+    /* vector <Pixel> getPixels();
+
+        return copy of pixels from image
+
+        Returned value: flat array of image pixels
+    */
+	vector <Pixel> getPixels();
+
+    /* outputImage(string filename);
+
+        filename - path to image
+
+        save image into disk to path
+    */
+	void outImage(string filename);
 };
+#endif
